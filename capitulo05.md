@@ -114,4 +114,120 @@ O programa principal simplesmente invoca yyparse().
 Se bem-sucedido, o resultado é armazenado na variável global 
 "parser_result"  para extração e uso a partir do programa principal.
 
+5.4 Expression Trees
+
+E se quisermos encontrar todos os erros na expressão antes da execução?
+
+Adicionar uma nova etapa ao interpretador. 
+Ao invés de computar valores diretamente, 
+construir uma estrutura de dados -- árvore sintática abstrata (AST) --
+para representar a expressão. 
+A AST pode ser visitada para para verificar, executar 
+ou traduzir o programa, por exemplo.
+
+```
+typedef enum {
+   EXPR_ADD,
+   EXPR_SUBTRACT,
+   EXPR_DIVIDE,
+   EXPR_MULTIPLY,
+   EXPR_VALUE
+} expr_t;
+```
+
+```
+struct expr {
+   expr_t kind;
+   struct expr *left;
+   struct expr *right;
+   int value;
+};
+```
+
+Definir o tipo semântico usando a macro:
+```
+#define YYSTYPE struct expr *
+```
+
+
+```
+%{
+#include "expr.h"
+
+#define YYSTYPE struct expr *
+
+struct expr * parser_result = 0;
+%}
+```
+
+```
+struct expr * expr_create(expr_t kind,
+struct expr *left,
+struct expr *right)
+{
+   struct expr *e = malloc(sizeof(*e));
+   e->kind = kind;
+   e->value = 0;
+   e->left = left;
+   e->right = right;
+   return e;
+}
+struct expr * expr_create_value(int value)
+{
+   struct expr *e = expr_create(EXPR_VALUE,0,0);
+   e->value = value;
+   return e;
+}
+```
+- Exemplo: `10+20'
+
+```
+struct expr *a = expr_create_value(10);
+struct expr *b = expr_create_value(20);
+struct expr *c = expr_create(EXPR_ADD,a,b);
+```
+
+- Regra de produção modificada:
+```
+expr 
+: expr TOKEN_PLUS term 
+{ $$ = expr_create(EXPR_ADD,$1,$3); }
+| expr TOKEN_MINUS term 
+{ $$ = expr_create(EXPR_SUBTRACT,$1,$3); }
+| term { $$ = $1; }
+;
+```
+
+- Exemplo: `(10+20)*30`
+
+```
+struct expr *a = expr_create_value(10);    
+struct expr *b = expr_create_value(20);
+struct expr *c = expr_create(EXPR_ADD,a,b);
+struct expr *d = expr_create_value(30);
+struct expr *e = expr_create(EXPR_MULTIPLY,c,d);
+```
+
+![ast](.figuras/fig-ast-expr.png)
+
+
+```
+term 
+: term TOKEN_MUL factor
+{ $$ = expr_create(EXPR_MULTIPLY,$1,$3); }
+| term TOKEN_DIV factor
+{ $$ = expr_create(EXPR_DIVIDE,$1,$3); }
+| factor { $$ = $1; }
+;
+
+factor
+: TOKEN_MINUS factor 
+{ $$ = expr_create(EXPR_SUBTRACT, expr_create_value(0),$2); }
+| TOKEN_LPAREN expr TOKEN_RPAREN { $$ = $2; }
+| TOKEN_INT
+{ $$ = expr_create_value(atoi(yytext));
+;
+
+```
+
 
