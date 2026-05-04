@@ -43,6 +43,8 @@ e assim por diante,  até que o resultado chegue ao símbolo inicial.
 ```
 // parser
 
+prog : expr TOKEN_SEMI { parser_result = $1; }
+...
 expr: expr '+' term { $$ = $1 + $3; }
 ...
 term: term '*' factor { $$ = $1 * $3; }
@@ -53,7 +55,5 @@ factor : TOKEN_INT { $$ = $1; }
 O programa principal simplesmente invoca yyparse(). 
 Se bem-sucedido, o resultado é armazenado na variável global 
 "parser_result"  para extração e uso a partir do programa principal.
-
-
 
 
