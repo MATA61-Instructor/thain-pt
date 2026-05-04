@@ -221,4 +221,27 @@ factor
 
 ```
 
+#### Avaliador de expressões
+
+```
+int expr_evaluate( struct expr *e )
+{
+   if(!e) return 0;
+   int l = expr_evaluate(e->left);
+   int r = expr_evaluate(e->right);
+   switch(e->kind) {
+      case EXPR_VALUE: return e->value;
+      case EXPR_ADD: return l+r;
+      case EXPR_SUBTRACT: return l-r;
+      case EXPR_MULTIPLY: return l*r;
+      case EXPR_DIVIDE:
+         if(r==0) {
+            printf("runtime error: divide by zero\n");
+            exit(1);
+         }
+         return l/r;
+   }
+   return 0;
+}
+```
 
