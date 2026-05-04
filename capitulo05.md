@@ -14,7 +14,9 @@ Por exemplo, na regra de adição, a ação semântica apropriada é
 adicionar o valor da esquerda (o primeiro símbolo) ao valor da direita 
 (o terceiro símbolo):
 
-```expr : expr TOKEN_PLUS term { $$ = $1 + $3; } ```
+```
+expr : expr TOKEN_PLUS term { $$ = $1 + $3; } 
+```
 
 De onde vêm os valores semânticos $1 e $3? Eles simplesmente
 vêm das outras regras que definem esses não-terminais. 
@@ -26,9 +28,10 @@ Por exemplo, esta regra indica que o valor semântico de um token inteiro é o v
 [0-9]+  { yylval = atoi(yytext); return TOKEN_INT; }
 
 // parser
-factor : TOKEN_INT { $$ = $1; }```
+factor : TOKEN_INT { $$ = $1; }
+```
 
-Ação _default_ para regra com um símbolo à direita:
+- Ação _default_ para regra com um símbolo à direita:
 
 ```term : factor { $$ = $1; } ``` 
 
@@ -41,7 +44,8 @@ A Figura 5.4 mostra uma gramática Bison que implementa
 um interpretador completo.
 O programa principal simplesmente invoca yyparse(). 
 Se bem-sucedido, o resultado é armazenado na variável global 
-`parser_result`  para extração e uso a partir do programa principal.
+"parser_result"  para extração e uso a partir do programa principal.
+
 
 ![fig54](./figuras/fig5-4.png)
 
