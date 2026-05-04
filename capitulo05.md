@@ -179,24 +179,6 @@ struct expr * expr_create_value(int value)
    return e;
 }
 ```
-- Exemplo: `10+20'
-
-```
-struct expr *a = expr_create_value(10);
-struct expr *b = expr_create_value(20);
-struct expr *c = expr_create(EXPR_ADD,a,b);
-```
-
-- Regra de produção modificada:
-```
-expr 
-: expr TOKEN_PLUS term 
-{ $$ = expr_create(EXPR_ADD,$1,$3); }
-| expr TOKEN_MINUS term 
-{ $$ = expr_create(EXPR_SUBTRACT,$1,$3); }
-| term { $$ = $1; }
-;
-```
 
 - Exemplo: `(10+20)*30`
 
@@ -210,8 +192,17 @@ struct expr *e = expr_create(EXPR_MULTIPLY,c,d);
 
 ![ast](./figuras/fig-ast-expr.png)
 
+- Regras de produção modificadas:
 
 ```
+expr
+: expr TOKEN_PLUS term
+{ $$ = expr_create(EXPR_ADD,$1,$3); }
+| expr TOKEN_MINUS term
+{ $$ = expr_create(EXPR_SUBTRACT,$1,$3); }
+| term { $$ = $1; }
+;
+
 term 
 : term TOKEN_MUL factor
 { $$ = expr_create(EXPR_MULTIPLY,$1,$3); }
