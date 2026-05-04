@@ -40,13 +40,20 @@ ele determina os valores semânticos dos nós-folha na árvore
 sintática primeiro, depois os passa para os nós internos 
 e assim por diante,  até que o resultado chegue ao símbolo inicial.
 
-A Figura 5.4 mostra uma gramática Bison que implementa 
-um interpretador completo.
+```
+// parser
+
+expr: expr '+' term { $$ = $1 + $3; }
+...
+term: term '*' factor { $$ = $1 * $3; }
+...
+factor : TOKEN_INT { $$ = $1; }
+```
+
 O programa principal simplesmente invoca yyparse(). 
 Se bem-sucedido, o resultado é armazenado na variável global 
 "parser_result"  para extração e uso a partir do programa principal.
 
 
-![fig54](./figuras/fig5-4.png)
 
 
