@@ -208,7 +208,7 @@ struct expr *d = expr_create_value(30);
 struct expr *e = expr_create(EXPR_MULTIPLY,c,d);
 ```
 
-![ast](.figuras/fig-ast-expr.png)
+![ast](./figuras/fig-ast-expr.png)
 
 
 ```
